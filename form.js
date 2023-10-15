@@ -1,64 +1,69 @@
-let nameInput = document.getElementById("text");
-let emailInput = document.getElementById("email");
-let passInput = document.getElementById("password");
-let invalidSpan = document.querySelector("span");
-let btn = document.getElementById("btn");
+// Selecting form and input elements
+const form = document.querySelector("form");
+const passwordInput = document.getElementById("password");
+const passToggleBtn = document.getElementById("pass-toggle-btn");
 
-let data = []; 
+// Function to display error messages
+const showError = (field, errorText) => {
+  field.classList.add("error");
+  const errorElement = document.createElement("small");
+  errorElement.classList.add("error-text");
+  errorElement.innerText = errorText;
+  field.closest(".form-group").appendChild(errorElement);
+};
 
-if (localStorage.getItem("Data List") != null)
-{ data = JSON.parse(localStorage.getItem("Data List")) };
+// Function to handle form submission
+const handleFormData = (e) => {
+  e.preventDefault();
 
-function signUp()
-{
-    if (signUpValidat()) {
-        let currData = {
-            name: nameInput.value,
-            email: emailInput.value,
-            password: passInput.value
-        }
-        data.push(currData);
-        localStorage.setItem("Data List", JSON.stringify(data));
-    } else {
-        invalidSpan.style.setProperty("display", "block");
-        btn.removeAttribute("href");
-    }
-}
-btn.addEventListener("click", signUp);
+  // Retrieving input elements
+  const fullnameInput = document.getElementById("fullname");
+  const emailInput = document.getElementById("email");
+  const dateInput = document.getElementById("date");
+  const genderInput = document.getElementById("gender");
 
-// function signUp()
-// {
-//     if (signUpValidat()) {
-//         let currData = {
-//             name: nameInput.value,
-//             email: emailInput.value,
-//             password: passInput.value
-//         }
-//         if (data.get("email") === currData.email)
-//         {
-//             return alert("This email is already registered with us.");
-//         } else {
-//             data.push(currData);
-//             localStorage.setItem("Data List", JSON.stringify(data));
-//         }
-//     } else {
-//         invalidSpan.style.setProperty("display", "block");
-//         btn.removeAttribute("href");
-//     }
-// }
+  // Getting trimmed values from input fields
+  const fullname = fullnameInput.value.trim();
+  const email = emailInput.value.trim();
+  const password = passwordInput.value.trim();
+  const date = dateInput.value;
+  const gender = genderInput.value;
 
-function signUpValidat()
-{
-    let passRegx = /^[0-9]{4,9}$/;
-    let emailRegx = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-    if (passRegx.test(passInput.value) && emailRegx.test(emailInput.value))
-    { return true } else { return false };
-}
+  // Regular expression pattern for email validation
+  const emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
 
+  // Clearing previous error messages
+  document
+    .querySelectorAll(".form-group .error")
+    .forEach((field) => field.classList.remove("error"));
+  document
+    .querySelectorAll(".error-text")
+    .forEach((errorText) => errorText.remove());
 
-function sin()
-{
-    let passRegx = data.name;
-    let emailRegx = data.email;
-    let nameRegx = data.password;
-}
+  // Performing validation checks
+  if (fullname === "") showError(fullnameInput, "Enter your full name");
+  if (!emailPattern.test(email))
+    showError(emailInput, "Enter a valid email address");
+  if (password === "") showError(passwordInput, "Enter your password");
+  if (date === "") showError(dateInput, "Select your date of birth");
+  if (gender === "") showError(genderInput, "Select your gender");
+
+  // Checking for any remaining errors before form submission
+  const errorInputs = document.querySelectorAll(".form-group .error");
+  if (errorInputs.length > 0) return;
+
+  // Submitting the form
+  form.submit();
+};
+
+// Toggling password visibility
+passToggleBtn.addEventListener("click", () => {
+  passToggleBtn.className =
+    passwordInput.type === "password"
+      ? "fa-solid fa-eye-slash"
+      : "fa-solid fa-eye";
+  passwordInput.type = passwordInput.type === "password" ? "text" : "password";
+});
+
+// Handling form submission event
+form.addEventListener("submit", handleFormData);
